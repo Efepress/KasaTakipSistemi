@@ -2,24 +2,28 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
-# Proje dosyalarýný kopyala ve baðýmlýlýklarý yükle
-COPY *.csproj ./
+# --- DEÐÝÞÝKLÝK BURADA BAÞLIYOR ---
+# Önce sadece .sln ve .csproj dosyalarýný kopyala
+# Bu, katmanlý önbellekleme (layer caching) için en iyi yöntemdir
+COPY *.sln .
+COPY KasaTakipSistemi/*.csproj ./KasaTakipSistemi/
+
+# Baðýmlýlýklarý restore et
 RUN dotnet restore
 
-# Tüm proje dosyalarýný kopyala
-COPY . ./
+# Þimdi projenin geri kalan tüm dosyalarýný kopyala
+COPY . .
 
-# Projeyi yayýnla (Release modunda)
-RUN dotnet publish -c Release -o out
+# --- DEÐÝÞÝKLÝK BURADA BÝTÝYOR ---
+
+# Projeyi yayýnla, çýktýlarý /app/out klasörüne koy
+# Yayýnlarken proje dosyasýnýn tam yolunu belirtiyoruz
+RUN dotnet publish KasaTakipSistemi/KasaTakipSistemi.csproj -c Release -o out
 
 # Çalýþtýrma ortamý için ASP.NET 8 Runtime imajýný kullan
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 COPY --from=build-env /app/out .
-
-# Uygulamanýn hangi portu dinleyeceðini belirt
-# Render, PORT adýnda bir ortam deðiþkeni saðlar, onu kullanalým.
-# ENV ASPNETCORE_URLS=http://+:10000 satýrýný siliyoruz veya yorum yapýyoruz.
 
 # Uygulamayý baþlat
 ENTRYPOINT ["dotnet", "KasaTakipSistemi.dll"]
