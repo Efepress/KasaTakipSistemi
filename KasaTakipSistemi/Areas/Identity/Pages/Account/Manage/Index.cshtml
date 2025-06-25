@@ -1,0 +1,65 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Profil"; // Sayfa başlığını Türkçe yaptık
+    ViewData["ActivePage"] = ManageNavPages.Index; // _ManageNav için aktif sayfa
+                                                   // ViewData["ActivePageManageNav"] = "Profil"; // Bu zaten Index.cshtml.cs içinde set ediliyor
+}
+
+@*
+    Manage/_Layout.cshtml zaten bir sayfa başlığı ve breadcrumb yapısı sunuyor.
+    Eğer StatusMessage'ı doğrudan burada göstermek isterseniz:
+*@
+@if (!string.IsNullOrEmpty(Model.StatusMessage))
+{
+    var statusMessageClass = Model.StatusMessage.StartsWith("Hata") ? "danger" : "success";
+    <div class="alert alert-@statusMessageClass alert-dismissible fade show" role="alert">
+        @Model.StatusMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+    </div>
+}
+
+<div class="portlet light bordered">
+    @* Projenizdeki genel kart/portlet yapısını kullanabilirsiniz *@
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fas fa-user-edit"></i> @* İkon ekleyebilirsiniz *@
+            <span class="caption-subject font-dark bold uppercase">Profil Bilgileri</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <form id="profile-form" method="post">
+            @* <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div> *@
+            @* ModelOnly yerine alan bazlı hatalar daha iyi *@
+
+            <div class="form-body">
+                <div class="form-group mb-3">
+                    <label asp-for="Username" class="form-label"></label>
+                    <input asp-for="Username" class="form-control" disabled />
+                    @* Username (e-posta) değiştirilemez olduğu için span ile de gösterilebilir *@
+                    @* <p class="form-control-static">@Model.Username</p> *@
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.FullName" class="form-control" placeholder="Adınız Soyadınız" />
+                    <label asp-for="Input.FullName"></label>
+                    <span asp-validation-for="Input.FullName" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Telefon Numaranız" />
+                    <label asp-for="Input.PhoneNumber" class="form-label"></label>
+                    <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-actions text-center mt-4">
+                @* Butonu ortalamak için *@
+                <button id="update-profile-button" type="submit" class="btn btn-primary btn-lg"><i class="fas fa-save me-2"></i>Kaydet</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

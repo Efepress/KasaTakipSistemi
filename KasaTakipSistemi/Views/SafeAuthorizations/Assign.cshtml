@@ -1,0 +1,50 @@
+﻿@model KasaTakipSistemi.ViewModels.AssignSafeAuthorizationViewModel
+
+@{
+    ViewData["Title"] = "Yeni Kasa Yetkisi Ata";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-7">
+        <form asp-action="Assign" method="post">
+           
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="SelectedUserId" class="form-label"></label>
+                <select asp-for="SelectedUserId" class="form-select" asp-items="Model.UserList">
+                    <option value="">-- Kullanıcı Seçiniz --</option>
+                </select>
+                <span asp-validation-for="SelectedUserId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="SelectedSafeId" class="form-label"></label>
+                <select asp-for="SelectedSafeId" class="form-select" asp-items="Model.SafeList">
+                    <option value="">-- Kasa Seçiniz --</option>
+                </select>
+                <span asp-validation-for="SelectedSafeId" class="text-danger"></span>
+            </div>
+
+            <div class="form-check mb-3">
+                <input class="form-check-input" asp-for="IsActive" type="checkbox" />
+                <label class="form-check-label" asp-for="IsActive"></label>
+                <span asp-validation-for="IsActive" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-4">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Yetkiyi Ata</button>
+                <a asp-action="Index" class="btn btn-secondary">Listeye Geri Dön</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

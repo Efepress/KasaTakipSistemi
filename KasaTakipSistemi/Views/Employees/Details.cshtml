@@ -1,0 +1,75 @@
+﻿@model KasaTakipSistemi.Models.Employee
+
+@{
+    ViewData["Title"] = "Personel Detayları";
+}
+
+<h1>@Model.FullName <small class="text-muted">(@ViewData["Title"])</small></h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-7">
+        <h4>Personel Bilgileri</h4>
+        <dl class="row">
+            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.FullName)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.FullName)</dd>
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Position)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.Position)</dd>
+
+            <dt class="col-sm-4">Maaş</dt>
+            <dd class="col-sm-8">@Model.MaasBilgiStr</dd>
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.HireDate)</dt>
+            <dd class="col-sm-8">@(Model.HireDate.HasValue ? Model.HireDate.Value.ToShortDateString() : "-")</dd>
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.DefaultSafe)</dt>
+            <dd class="col-sm-8">@Model.KasaAd</dd>
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.IsActive)</dt>
+            <dd class="col-sm-8">@(Model.IsActive ? "Aktif" : "Pasif")</dd>
+
+            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Notes)</dt>
+            <dd class="col-sm-8">@Html.DisplayFor(model => model.Notes)</dd>
+        </dl>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Bilgileri Düzenle</a>
+        <a asp-action="Index" class="btn btn-secondary">Listeye Geri Dön</a>
+    </div>
+    <div class="col-md-5">
+        <h4>Maaş Ödemeleri</h4>
+        <a asp-controller="SalaryPayments" asp-action="Create" asp-route-employeeId="@Model.Id" class="btn btn-success btn-sm mb-2">
+            <i class="fas fa-plus"></i> Yeni Maaş Ödemesi Ekle
+        </a>
+        @if (!Model.SalaryPayments.Any())
+        {
+            <div class="alert alert-info">Bu personele ait maaş ödemesi bulunmamaktadır.</div>
+        }
+        else
+        {
+            <ul class="list-group">
+                @foreach (var payment in Model.SalaryPayments.OrderByDescending(p => p.PaymentDate))
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>@payment.PaymentDate.ToShortDateString():</strong>
+                            @payment.AmountPaid.ToString("N2") @payment.Currency?.Symbol
+                            (@payment.Safe?.Name)
+                            @if (!string.IsNullOrEmpty(payment.Description))
+                            {
+                                <small class="d-block text-muted"><em>@payment.Description</em></small>
+                            }
+                        </div>
+                        <div>
+                            <a asp-controller="SalaryPayments" asp-action="Edit" asp-route-id="@payment.Id" class="btn btn-sm btn-outline-primary me-1" title="Düzenle"><i class="fas fa-edit"></i></a>
+                     
+                            <form asp-controller="SalaryPayments" asp-action="Delete" asp-route-id="@payment.Id" method="post" class="d-inline" onsubmit="return confirm('Bu maaş ödemesini silmek istediğinizden emin misiniz?');">
+                                <input type="hidden" name="employeeId" value="@Model.Id" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Sil"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+</div>

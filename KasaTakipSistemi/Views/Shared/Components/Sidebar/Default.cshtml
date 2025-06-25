@@ -1,0 +1,48 @@
+﻿@model KasaTakipSistemi.ViewComponents.SidebarViewModel
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+}
+<a class="sidebar-logo-container" asp-controller="Home" asp-action="Index">
+    <img src="~/img/EAK.png" alt="Logo" />
+</a>
+
+<div class="kasa-secimi-container">
+    <label class="form-label">Aktif Kasa:</label>
+    @if (Model.AccessibleSafes.Any())
+    {
+        <form asp-controller="Home" asp-action="SelectSafe" method="post" onchange="this.submit()">
+            <select name="safeId" class="form-select form-select-sm" aria-label="Kasa Seçimi">
+                @foreach (var safe in Model.AccessibleSafes)
+                {
+                    <option value="@safe.Id" selected="@(safe.Id == Model.SelectedSafeId)">@safe.Name</option>
+                }
+            </select>
+        </form>
+    }
+    else
+    {
+        <div class="text-warning" style="font-size:0.8rem;">Kasa Yok</div>
+    }
+</div>
+
+<div class="menu-scroll-container">
+    <div class="heading">KASA ÖZET</div>
+    <ul class="nav flex-column">
+        <li class="nav-item"><a class="nav-link @(currentController == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index"><i class="fas fa-home"></i> <span class="title">Genel Özet</span></a></li>
+        <li class="nav-item"><a class="nav-link @(currentController == "Transactions" && currentAction == "Index" ? "active" : "")" asp-controller="Transactions" asp-action="Index"><i class="fas fa-list-alt"></i> <span class="title">Hesap Özet</span></a></li>
+        <li class="nav-item"><a class="nav-link @(currentController == "Transactions" && currentAction == "CreateIncome" ? "active" : "")" asp-controller="Transactions" asp-action="CreateIncome"><i class="fas fa-plus-circle"></i> <span class="title">Gelir Ekle</span></a></li>
+        <li class="nav-item"><a class="nav-link @(currentController == "Transactions" && currentAction == "CreateExpense" ? "active" : "")" asp-controller="Transactions" asp-action="CreateExpense"><i class="fas fa-minus-circle"></i> <span class="title">Gider Ekle</span></a></li>
+        <li class="nav-item"><a class="nav-link @(currentController == "CurrentAccounts" ? "active" : "")" asp-controller="CurrentAccounts" asp-action="Index"><i class="fas fa-users"></i> <span class="title">Cari Hesaplar</span></a></li>
+        <li class="nav-item"><a class="nav-link @(currentController == "Employees" || currentController == "SalaryPayments" ? "active" : "")" asp-controller="Employees" asp-action="Index"><i class="fas fa-user-tie"></i> <span class="title">Maaş Takip</span></a></li>
+        <li class="nav-item"><a class="nav-link @(currentController == "CurrencyExchange" ? "active" : "")" asp-controller="CurrencyExchange" asp-action="Create"><i class="fas fa-exchange-alt"></i> <span class="title">Para Bozdur</span></a></li>
+        <li class="nav-item"><a class="nav-link @(currentController == "Reports" ? "active" : "")" asp-controller="Reports" asp-action="Index"><i class="fas fa-chart-line"></i> <span class="title">Raporlar</span></a></li>
+    </ul>
+    <div class="heading">AYARLAR</div>
+    <ul class="nav flex-column">
+        <li class="nav-item"><a class="nav-link @(currentController == "BankAccounts" || currentController == "Banks" ? "active" : "")" asp-controller="BankAccounts" asp-action="Index"><i class="fas fa-landmark"></i> <span class="title">Banka Hesapları</span></a></li>
+        <li class="nav-item"><a class="nav-link @(currentController == "Safes" ? "active" : "")" asp-controller="Safes" asp-action="Index"><i class="fas fa-cash-register"></i> <span class="title">Kasalar</span></a></li>
+        <li class="nav-item"><a class="nav-link @(currentController == "SafeAuthorizations" ? "active" : "")" asp-controller="SafeAuthorizations" asp-action="Index"><i class="fas fa-user-shield"></i> <span class="title">Kasa Yetkilileri</span></a></li>
+        <li class="nav-item"><a class="nav-link @(currentController == "Currencies" ? "active" : "")" asp-controller="Currencies" asp-action="Index"><i class="fas fa-coins"></i> <span class="title">Para Birimleri</span></a></li>
+    </ul>
+</div>

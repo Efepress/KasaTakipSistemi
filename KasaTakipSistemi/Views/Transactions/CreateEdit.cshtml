@@ -1,0 +1,98 @@
+﻿@model KasaTakipSistemi.ViewModels.TransactionViewModel
+@{
+    ViewData["Title"] = ViewData["FormTitle"];
+    var formAction = Model.Id == 0 ? (Model.Type == TransactionType.Gelir ? "CreateIncome" : "CreateExpense") : "Edit";
+    var formBackgroundColor = Model.Type == TransactionType.Gelir ? "background-color: #f0fff4;" : "background-color: #fff5f5;";
+}
+
+<div class="page-bar">
+    <ul class="page-breadcrumb">
+        <li>
+            <a asp-controller="Home" asp-action="Index">Ana Sayfa</a>
+            <i class="fa fa-circle"></i>
+        </li>
+        <li>
+            <a asp-action="Index">Hesap Özeti</a>
+            <i class="fa fa-circle"></i>
+        </li>
+        <li>
+            <span>@ViewData["Title"]</span>
+        </li>
+    </ul>
+</div>
+
+<h3 class="page-title">@ViewData["Title"]</h3>
+<hr />
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="portlet light bordered" style="@formBackgroundColor">
+            <div class="portlet-body">
+                <form asp-action="Save" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+               
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="Type" />
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="SafeId" class="control-label"></label>
+                            <select asp-for="SafeId" class="form-select" asp-items="ViewBag.SafeId"></select>
+                            <span asp-validation-for="SafeId" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="TransactionDate" class="control-label"></label>
+                            <input asp-for="TransactionDate" class="form-control" type="datetime-local" />
+                            <span asp-validation-for="TransactionDate" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="control-label"></label>
+                        <input asp-for="Description" class="form-control" />
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Amount" class="control-label"></label>
+                            <div class="input-group">
+                                <input asp-for="Amount" class="form-control" type="number" step="0.01" />
+                                <select asp-for="CurrencyId" class="form-select" asp-items="ViewBag.CurrencyId" style="max-width: 120px;"></select>
+                            </div>
+                            <span asp-validation-for="Amount" class="text-danger"></span>
+                            <span asp-validation-for="CurrencyId" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PayeeOrPayer" class="control-label"></label>
+                            <input asp-for="PayeeOrPayer" list="payee-list" class="form-control" placeholder="Bir cari seçin veya yeni bir isim yazın..." />
+                            <datalist id="payee-list">
+                                @if (ViewBag.PayeeOrPayerList != null)
+                                {
+                                    foreach (var item in (SelectList)ViewBag.PayeeOrPayerList)
+                                    {
+                                        <option value="@item.Value"></option>
+                                    }
+                                }
+                            </datalist>
+                            <span asp-validation-for="PayeeOrPayer" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-4 text-center">
+                        <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-save"></i> Kaydet</button>
+                        <a asp-action="Index" class="btn btn-secondary btn-lg">İptal</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

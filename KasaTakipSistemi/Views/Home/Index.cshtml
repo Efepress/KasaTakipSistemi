@@ -1,0 +1,200 @@
+﻿@model KasaTakipSistemi.ViewModels.DashboardViewModel
+@using System.Text.Json;
+@{
+    ViewData["Title"] = "Genel Özet";
+}
+
+<div class="page-bar">
+    <ul class="page-breadcrumb">
+        <li>
+            <i class="fa fa-home"></i>
+            <a asp-action="Index">Ana Sayfa</a>
+            <i class="fa fa-circle"></i>
+        </li>
+        <li>
+            <span>@Model.SelectedSafeName</span>
+        </li>
+    </ul>
+</div>
+
+<h3 class="page-title">
+    
+    <small>Genel Özet</small>
+</h3>
+
+@if (TempData["InfoMessage"] != null)
+{
+    <div class="alert alert-info">@TempData["InfoMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+
+@if (!Model.SelectedSafeName.Equals("Kasa Seçilmedi"))
+{
+ 
+    <div class="row">
+        @foreach (var balance in Model.SafeBalances)
+        {
+            var colorClass = balance.Symbol switch
+            {
+                "₺" => "blue",
+                "$" => "green",
+                "€" => "purple",
+                "£" => "red",
+                _ => "dark"
+            };
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="dashboard-stat @colorClass">
+                    <div class="visual">
+                        <i class="fa @(balance.Symbol == "₺" ? "fa-lira-sign" : balance.Symbol == "$" ? "fa-dollar-sign" : balance.Symbol == "€" ? "fa-euro-sign" : balance.Symbol == "£" ? "fa-pound-sign" : "fa-coins")"></i>
+                    </div>
+                    <div class="details">
+                        <div class="number">@balance.TotalAmount.ToString("N2") <small>@balance.Symbol</small></div>
+                        <div class="desc">@balance.CurrencyName Bakiye</div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="row mt-2">
+       
+        <div class="col-md-6">
+            <div class="portlet light bordered">
+                <div class="portlet-title">
+                    <div class="caption">
+                        <i class="fas fa-list"></i>
+                        <span class="caption-subject font-dark bold uppercase">SON 10 İŞLEM</span>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    @if (Model.RecentTransactions.Any())
+                    {
+                        <ul class="feeds">
+                            @foreach (var trans in Model.RecentTransactions)
+                            {
+                                <li>
+                                    <div class="col1">
+                                        <div class="cont-col1">
+                                            <div class="label label-sm @(trans.IsIncome ? "label-success" : "label-danger")" style="padding: 2px 6px; border-radius: 50%;">
+                                                <i class="fa @(trans.IsIncome ? "fa-plus" : "fa-minus")"></i>
+                                            </div>
+                                        </div>
+                                        <div class="cont-col2">
+                                            <div class="desc">
+                                                @trans.Description (@(trans.Amount.ToString("N2")) @trans.CurrencySymbol)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="date">@trans.TransactionDate.ToString("dd.MM HH:mm")</div>
+                                </li>
+                            }
+                        </ul>
+                        <div class="text-center mt-3">
+                            <a class="btn btn-sm btn-outline-primary" asp-controller="Transactions" asp-action="Index">Tüm İşlemleri Göster <i class="fas fa-arrow-right ms-1"></i></a>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-center text-muted">Bu kasada gösterilecek işlem bulunmamaktadır.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+       
+        <div class="col-md-6">
+            <div class="portlet light bordered">
+                <div class="portlet-title">
+                    <div class="caption">
+                        <i class="fas fa-chart-bar"></i>
+                        <span class="caption-subject font-dark bold uppercase">BU AY GELİR-GİDER (₺)</span>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div style="height: 250px; position: relative;">
+                        <canvas id="monthlySummaryChart"></canvas>
+                    </div>
+                    <div class="mt-3 text-end" style="font-size:0.9rem;">
+                        <div class="text-success fw-bold">Toplam Gelir: @Model.MonthlyIncomeTl.ToString("N2") ₺</div>
+                        <div class="text-danger fw-bold">Toplam Gider: @Model.MonthlyExpenseTl.ToString("N2") ₺</div>
+                        <hr style="margin: 0.5rem 0;" />
+                        <div class="text-primary fw-bolder">Net Özet: @Model.MonthlySummaryTl.ToString("N2") ₺</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (document.getElementById('monthlySummaryChart')) {
+                var ctx = document.getElementById('monthlySummaryChart').getContext('2d');
+
+               
+                var chartDataJson = '@Html.Raw(JsonSerializer.Serialize(Model.MonthlyChartData))';
+                var chartData = JSON.parse(chartDataJson);
+
+                var labels = [];
+                for (var i = 1; i <= new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate(); i++) {
+                    labels.push(i.toString());
+                }
+
+                var incomePoints = new Array(labels.length).fill(null);
+                var expensePoints = new Array(labels.length).fill(null);
+
+                if (chartData && chartData.Gelirler) {
+                    chartData.Gelirler.forEach(function (item) {
+                        if (item && item.Item1 >= 1 && item.Item1 <= labels.length) {
+                            incomePoints[item.Item1 - 1] = item.Item2;
+                        }
+                    });
+                }
+                if (chartData && chartData.Giderler) {
+                    chartData.Giderler.forEach(function (item) {
+                        if (item && item.Item1 >= 1 && item.Item1 <= labels.length) {
+                            expensePoints[item.Item1 - 1] = item.Item2;
+                        }
+                    });
+                }
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Gelir',
+                            data: incomePoints,
+                            borderColor: 'rgb(0, 166, 90)',
+                            backgroundColor: 'rgba(0, 166, 90, 0.1)',
+                            tension: 0.2,
+                            fill: true,
+                            spanGaps: true
+                        }, {
+                            label: 'Gider',
+                            data: expensePoints,
+                            borderColor: 'rgb(221, 75, 57)',
+                            backgroundColor: 'rgba(221, 75, 57, 0.1)',
+                            tension: 0.2,
+                            fill: true,
+                            spanGaps: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: true } },
+                        plugins: { legend: { position: 'top' }, tooltip: { mode: 'index', intersect: false } }
+                    }
+                });
+            }
+        });
+    </script>
+}

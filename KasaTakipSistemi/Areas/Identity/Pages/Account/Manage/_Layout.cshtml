@@ -1,0 +1,53 @@
+﻿@{
+    
+    Layout = "/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = ViewData["Title"] ?? "Hesabımı Yönet"; 
+}
+
+
+
+<div>
+  
+    <div class="page-bar">
+       
+        <ul class="page-breadcrumb">
+            <li>
+                <a asp-controller="Home" asp-action="Index">Ana Sayfa</a>
+                <i class="fa fa-circle"></i>
+            </li>
+            <li>
+                <span>Hesabımı Yönet</span>
+                @if (!string.IsNullOrEmpty(ViewData["ActivePageManageNav"]?.ToString()))
+                {
+                    <i class="fa fa-circle"></i>
+                    <span>@ViewData["ActivePageManageNav"]</span>
+                }
+            </li>
+        </ul>
+    </div>
+
+    <h3 class="page-title">
+        @ViewData["Title"]
+        @if (!string.IsNullOrEmpty(ViewData["ActivePageManageNav"]?.ToString()))
+        {
+            <small> / @ViewData["ActivePageManageNav"]</small>
+        }
+    </h3>
+    <hr>
+
+
+    <div class="row">
+        <div class="col-md-3 mb-3 mb-md-0">
+     
+            <partial name="_ManageNav" />
+        </div>
+        <div class="col-md-9">
+            
+            @RenderBody() 
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}

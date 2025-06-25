@@ -1,0 +1,85 @@
+﻿@model KasaTakipSistemi.ViewModels.BankAccountCreateEditViewModel
+@using KasaTakipSistemi.Controllers
+
+@{
+    ViewData["Title"] = "Banka Hesabı Düzenle";
+}
+
+<h1>@ViewData["Title"]</h1>
+<h4>@Model.AccountName</h4>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+
+            <div class="mb-3">
+                <label asp-for="AccountName" class="control-label"></label>
+                <input asp-for="AccountName" class="form-control" />
+                <span asp-validation-for="AccountName" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="BankId" class="control-label"></label>
+                    <select asp-for="BankId" class="form-select" asp-items="ViewBag.BankId"></select>
+                    <span asp-validation-for="BankId" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="AccountType" class="control-label"></label>
+                    <select asp-for="AccountType" class="form-select" asp-items="ViewBag.AccountTypes"></select>
+                    <span asp-validation-for="AccountType" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="CurrencyId" class="control-label"></label>
+                    <select asp-for="CurrencyId" class="form-select" asp-items="ViewBag.CurrencyId"></select>
+                    <span asp-validation-for="CurrencyId" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="BranchCode" class="control-label"></label>
+                    <input asp-for="BranchCode" class="form-control" />
+                    <span asp-validation-for="BranchCode" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="AccountNumber" class="control-label"></label>
+                    <input asp-for="AccountNumber" class="form-control" />
+                    <span asp-validation-for="AccountNumber" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Iban" class="control-label"></label>
+                    <input asp-for="Iban" class="form-control" />
+                    <span asp-validation-for="Iban" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Notes" class="control-label"></label>
+                <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+                <span asp-validation-for="Notes" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3 form-check">
+                <input class="form-check-input" asp-for="IsActive" />
+                <label class="form-check-label" asp-for="IsActive"></label>
+            </div>
+
+            <div class="form-group mt-4">
+                <input type="submit" value="Kaydet" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Listeye Geri Dön</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

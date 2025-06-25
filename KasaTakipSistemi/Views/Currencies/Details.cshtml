@@ -1,0 +1,30 @@
+﻿@model KasaTakipSistemi.Models.Currency
+
+@{
+    ViewData["Title"] = "Para Birimi Detayları";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div>
+    <h4>@Model.Name</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Symbol)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Symbol)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Düzenle</a> |
+    <a asp-action="Index" class="btn btn-secondary">Listeye Geri Dön</a>
+</div>

@@ -1,0 +1,68 @@
+﻿@page
+@model EmailModel
+@{
+    ViewData["Title"] = "E-posta Yönetimi";
+    ViewData["ActivePage"] = ManageNavPages.Email;
+}
+
+@if (!string.IsNullOrEmpty(Model.StatusMessage))
+{
+    var statusMessageClass = Model.StatusMessage.StartsWith("Hata") || Model.StatusMessage.StartsWith("Error") ? "danger" : "success";
+    <div class="alert alert-@statusMessageClass alert-dismissible fade show" role="alert">
+        @Model.StatusMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+    </div>
+}
+
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fas fa-envelope"></i> 
+            <span class="caption-subject font-dark bold uppercase">@ViewData["Title"]</span>
+        </div>
+    </div>
+    <div class="portlet-body form">
+        <div class="row">
+            <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+                
+                <form id="email-form" method="post">
+                    
+
+                    <div class="form-group mb-3">
+                       
+                        <label asp-for="Email" class="form-label fw-bold"></label>
+                        @if (Model.IsEmailConfirmed)
+                        {
+                            <div class="input-group">
+                                <input asp-for="Email" class="form-control" disabled />
+                                <span class="input-group-text bg-success text-white" title="Onaylanmış"><i class="fas fa-check-circle"></i></span>
+                            </div>
+                        }
+                        else
+                        {
+                            <input asp-for="Email" class="form-control mb-1" disabled />
+                            <p class="text-muted small">E-posta adresiniz henüz onaylanmamış.</p>
+                            <button id="email-verification" type="submit" asp-page-handler="SendVerificationEmail" class="btn btn-link px-0">Doğrulama e-postası gönder</button>
+                        }
+                    </div>
+
+                    <hr class="my-4"> 
+
+                    <p class="fw-bold mb-2">E-posta Adresini Değiştir:</p>
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.NewEmail" class="form-control" autocomplete="email" aria-required="true" placeholder="Yeni e-posta adresiniz" />
+                        <label asp-for="Input.NewEmail" class="form-label"></label>
+                        <span asp-validation-for="Input.NewEmail" class="text-danger"></span>
+                    </div>
+                    <div class="text-center mt-4">
+                        <button id="change-email-button" type="submit" asp-page-handler="ChangeEmail" class="btn btn-primary btn-lg"><i class="fas fa-exchange-alt me-2"></i>E-postayı Değiştir</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

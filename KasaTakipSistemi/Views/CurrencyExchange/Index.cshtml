@@ -1,0 +1,41 @@
+﻿@model IEnumerable<KasaTakipSistemi.Models.CurrencyExchange>
+
+@{
+    ViewData["Title"] = "Para Bozdurma İşlemleri";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-success"><i class="fas fa-plus"></i> Yeni Para Bozdurma İşlemi</a>
+</p>
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>İşlem Tarihi</th>
+            <th>Bozdurulan</th>
+            <th>Alınan</th>
+            <th>Cari</th>
+            <th>Ana Kasa</th>
+            <th>Açıklama</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.ExchangeDate.ToString("g")</td>
+                <td>@item.SoldAmount.ToString("N2") @item.SoldCurrency?.Symbol</td>
+                <td>@item.BoughtAmount.ToString("N2") @item.BoughtCurrency?.Symbol</td>
+                <td>@item.CurrentAccount?.Name</td>
+                <td>@item.MainSafe?.Name</td>
+                <td>@item.Description</td>
+              
+            </tr>
+        }
+    </tbody>
+</table>
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Kayıtlı para bozdurma işlemi bulunmamaktadır.</div>
+}

@@ -1,0 +1,124 @@
+﻿@model KasaTakipSistemi.ViewModels.ReportFilterViewModel
+@{
+    ViewData["Title"] = "Raporlar";
+}
+
+<div class="page-bar">
+    <ul class="page-breadcrumb">
+        <li>
+            <a asp-controller="Home" asp-action="Index">Ana Sayfa</a>
+            <i class="fa fa-circle"></i>
+        </li>
+        <li>
+            <span>@ViewData["Title"]</span>
+        </li>
+    </ul>
+</div>
+
+<h3 class="page-title">Detaylı Raporlama</h3>
+
+<div class="portlet light bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <i class="fa fa-filter"></i>
+            <span class="caption-subject font-dark bold uppercase">Rapor Filtreleme</span>
+        </div>
+        <div class="tools">
+            <a href="javascript:;" class="collapse" data-bs-toggle="collapse" data-bs-target="#filterCollapsePanel"></a>
+        </div>
+    </div>
+    <div class="portlet-body collapse show" id="filterCollapsePanel">
+        <form asp-action="GenerateReport" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="row p-3 align-items-end">
+                <div class="col-md-3 mb-3">
+                    <label asp-for="StartDate" class="form-label"></label>
+                    <input asp-for="StartDate" class="form-control" type="date" />
+                    <span asp-validation-for="StartDate" class="text-danger"></span>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label asp-for="EndDate" class="form-label"></label>
+                    <input asp-for="EndDate" class="form-control" type="date" />
+                    <span asp-validation-for="EndDate" class="text-danger"></span>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label asp-for="AccountId" class="form-label"></label>
+                    <select asp-for="AccountId" class="form-select" asp-items="@Model.AccountList"></select>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label asp-for="TransactionType" class="form-label"></label>
+                    <select asp-for="TransactionType" class="form-select" asp-items="@Model.TransactionTypeList"></select>
+                </div>
+                <div class="col-12 text-center mt-2">
+                    <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-chart-line"></i> RAPOR OLUŞTUR</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (Model.HasResults)
+{
+    <div class="portlet light bordered mt-4">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-file-alt"></i>
+                <span class="caption-subject font-dark bold uppercase">Rapor Sonuçları</span>
+            </div>
+        </div>
+        <div class="portlet-body">
+            @if (Model.ReportResults.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>@Html.DisplayNameFor(m => m.ReportResults.First().TransactionDate)</th>
+                                <th>@Html.DisplayNameFor(m => m.ReportResults.First().Description)</th>
+                                <th>@Html.DisplayNameFor(m => m.ReportResults.First().PayeeOrPayer)</th>
+                                <th class="text-end">@Html.DisplayNameFor(m => m.ReportResults.First().IncomeAmount)</th>
+                                <th class="text-end">@Html.DisplayNameFor(m => m.ReportResults.First().ExpenseAmount)</th>
+                                <th class="text-center">@Html.DisplayNameFor(m => m.ReportResults.First().CurrencySymbol)</th>
+                                <th class="text-center">@Html.DisplayNameFor(m => m.ReportResults.First().SafeName)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.ReportResults)
+                            {
+                                <tr>
+                                    <td>@item.TransactionDate.ToString("dd.MM.yyyy")</td>
+                                    <td>@item.Description</td>
+                                    <td>@item.PayeeOrPayer</td>
+                                    <td class="text-end text-success">@item.IncomeAmount?.ToString("N2")</td>
+                                    <td class="text-end text-danger">@item.ExpenseAmount?.ToString("N2")</td>
+                                    <td class="text-center">@item.CurrencySymbol</td>
+                                    <td class="text-center"><span class="badge bg-secondary">@item.SafeName</span></td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-info fw-bold">
+                                <td colspan="3" class="text-end">Toplam (@Model.SelectedCurrencySymbolForTotals):</td>
+                                <td class="text-end">@Model.TotalIncome.ToString("N2")</td>
+                                <td class="text-end">@Model.TotalExpense.ToString("N2")</td>
+                                <td colspan="2"></td>
+                            </tr>
+                            <tr class="table-primary fw-bolder fs-6">
+                                <td colspan="3" class="text-end">Net Toplam (@Model.SelectedCurrencySymbolForTotals):</td>
+                                <td colspan="2" class="text-center">@Model.NetTotal.ToString("N2")</td>
+                                <td colspan="2"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning text-center">
+                    Belirtilen kriterlere uygun herhangi bir kayıt bulunamadı.
+                </div>
+            }
+        </div>
+    </div>
+}

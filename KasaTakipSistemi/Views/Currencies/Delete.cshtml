@@ -1,0 +1,36 @@
+﻿@model KasaTakipSistemi.Models.Currency
+
+@{
+    ViewData["Title"] = "Para Birimi Sil";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<h3>Bu para birimini silmek istediğinizden emin misiniz?</h3>
+<div class="alert alert-warning">
+    <strong>Uyarı:</strong> Bu para birimi başka işlemlerle ilişkiliyse silinemeyebilir.
+</div>
+<div>
+    <h4>@Model.Name (@Model.Symbol)</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-3">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class = "col-sm-9">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class = "col-sm-3">
+            @Html.DisplayNameFor(model => model.Symbol)
+        </dt>
+        <dd class = "col-sm-9">
+            @Html.DisplayFor(model => model.Symbol)
+        </dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Sil" class="btn btn-danger" /> |
+        <a asp-action="Index" class="btn btn-secondary">Listeye Geri Dön</a>
+    </form>
+</div>

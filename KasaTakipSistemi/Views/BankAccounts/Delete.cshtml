@@ -1,0 +1,39 @@
+﻿@model KasaTakipSistemi.Models.BankAccount
+@using KasaTakipSistemi.Controllers
+
+@{
+    ViewData["Title"] = "Banka Hesabı Sil";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<h3>@Model.AccountName (@Model.Bank?.Name) adlı banka hesabını silmek istediğinizden emin misiniz?</h3>
+<div class="alert alert-warning">
+    <strong>Uyarı:</strong> Bu banka hesabıyla ilişkili işlemler varsa, bu durum sorunlara yol açabilir.
+</div>
+<div>
+    <h4>Hesap Bilgileri</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.AccountName)</dt>
+        <dd class="col-sm-8">@Html.DisplayFor(model => model.AccountName)</dd>
+
+        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Bank)</dt>
+        <dd class="col-sm-8">@Model.Bank?.Name</dd>
+
+        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.AccountType)</dt>
+        <dd class="col-sm-8">@CurrentAccountsController.GetDisplayName(Model.AccountType)</dd>
+
+        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Currency)</dt>
+        <dd class="col-sm-8">@Model.Currency?.Name (@Model.Currency?.Symbol)</dd>
+
+        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Iban)</dt>
+        <dd class="col-sm-8">@Html.DisplayFor(model => model.Iban)</dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Sil" class="btn btn-danger" /> |
+        <a asp-action="Index" class="btn btn-secondary">Listeye Geri Dön</a>
+    </form>
+</div>

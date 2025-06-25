@@ -1,0 +1,128 @@
+﻿@model KasaTakipSistemi.ViewModels.CurrencyExchangeViewModel
+@{
+    ViewData["Title"] = "Para Bozdur";
+    var selectedSafeName = Context.Session.GetString("SelectedSafeName") ?? "Kasa Seçilmedi";
+}
+
+<div class="page-bar">
+    <ul class="page-breadcrumb">
+        <li>
+            <a asp-controller="Home" asp-action="Index">Ana Sayfa</a>
+            <i class="fa fa-circle"></i>
+        </li>
+        <li>
+            <span>@ViewData["Title"]</span>
+        </li>
+    </ul>
+</div>
+
+<h3 class="page-title">@ViewData["Title"] <small>@selectedSafeName Kasası</small></h3>
+<p class="text-muted">Bu ekranda, seçili ana kasa üzerinden döviz bozdurma işlemlerini gerçekleştirebilirsiniz.</p>
+
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+    <input type="hidden" asp-for="SelectedSafeId" />
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="portlet light bordered" style="background-color: #fff5f5;">
+                <div class="portlet-title">
+                    <div class="caption text-danger">
+                        <i class="fas fa-arrow-down"></i>
+                        <span class="caption-subject bold uppercase">Bozdurulan Para (Kasadan Çıkan)</span>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div class="mb-3">
+                        <label asp-for="SoldAccountSource" class="form-label"></label>
+                        <select asp-for="SoldAccountSource" class="form-select" asp-items="ViewBag.AccountSources"></select>
+                        <span asp-validation-for="SoldAccountSource" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="SoldCurrencyId" class="form-label"></label>
+                        <select asp-for="SoldCurrencyId" class="form-select" asp-items="ViewBag.SoldCurrencyId">
+                            <option value="">-- Para Birimi Seç --</option>
+                        </select>
+                        <span asp-validation-for="SoldCurrencyId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="SoldAmount" class="form-label"></label>
+                        <input asp-for="SoldAmount" class="form-control" type="number" step="0.01" />
+                        <span asp-validation-for="SoldAmount" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="portlet light bordered" style="background-color: #f0fff4;">
+                <div class="portlet-title">
+                    <div class="caption text-success">
+                        <i class="fas fa-arrow-up"></i>
+                        <span class="caption-subject bold uppercase">Alınan Para (Kasaya Giren)</span>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div class="mb-3">
+                        <label asp-for="BoughtAccountSource" class="form-label"></label>
+                        <select asp-for="BoughtAccountSource" class="form-select" asp-items="ViewBag.AccountSources"></select>
+                        <span asp-validation-for="BoughtAccountSource" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="BoughtCurrencyId" class="form-label"></label>
+                        <select asp-for="BoughtCurrencyId" class="form-select" asp-items="ViewBag.BoughtCurrencyId">
+                            <option value="">-- Para Birimi Seç --</option>
+                        </select>
+                        <span asp-validation-for="BoughtCurrencyId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="BoughtAmount" class="form-label"></label>
+                        <input asp-for="BoughtAmount" class="form-control" type="number" step="0.01" />
+                        <span asp-validation-for="BoughtAmount" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="portlet light bordered mt-3">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fas fa-info-circle"></i> Ek Bilgiler
+            </div>
+        </div>
+        <div class="portlet-body">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="ExchangeDate" class="form-label"></label>
+                    <input asp-for="ExchangeDate" class="form-control" type="datetime-local" />
+                    <span asp-validation-for="ExchangeDate" class="text-danger"></span>
+                </div>
+                <div class="col-md-8 mb-3">
+                    <label asp-for="CurrentAccountId" class="form-label"></label>
+                    <select asp-for="CurrentAccountId" class="form-select" asp-items="ViewBag.CurrentAccountId">
+                        <option value="">-- Döviz Bürosu / Cari Seç (Opsiyonel) --</option>
+                    </select>
+                    <span asp-validation-for="CurrentAccountId" class="text-danger"></span>
+                </div>
+                <div class="col-12">
+                    <label asp-for="Description" class="form-label"></label>
+                    <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group mt-4 text-center">
+        <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-check"></i> Parayı Bozdur ve Kaydet</button>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary btn-lg">İptal</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,90 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using KasaTakipSistemi.Models
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    var user = await UserManager.GetUserAsync(User);
+    var userNameToShow = user?.FullName ?? user?.UserName ?? "Kullanıcı";
+    var isUserAuthenticated = SignInManager.IsSignedIn(User);
+
+    var currentPagePath = ViewContext.HttpContext.Request.Path.ToString();
+    var isLoginPage = currentPagePath.Equals("/Identity/Account/Login", StringComparison.OrdinalIgnoreCase);
+    var isRegisterPage = currentPagePath.Equals("/Identity/Account/Register", StringComparison.OrdinalIgnoreCase);
+
+    var hideMenusForPage = isLoginPage || isRegisterPage;
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Kasa Takip Sistemi</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" asp-append-version="true" />
+</head>
+<body class="@(isUserAuthenticated && !hideMenusForPage ? "page-layout-fixed-sidebar page-layout-fixed-header" : "")">
+
+    @if (isUserAuthenticated && !hideMenusForPage)
+    {
+        <nav class="sidebar">
+            @await Component.InvokeAsync("Sidebar")
+        </nav>
+    }
+
+    <div class="@(isUserAuthenticated && !hideMenusForPage ? "page-container-main" : "container-fluid")">
+        @if (isUserAuthenticated && !hideMenusForPage)
+        {
+            <header class="page-header-top">
+                <div class="page-logo-header">
+                 
+                    <a asp-controller="Home" asp-action="Index" class="text-white text-decoration-none h5 mb-0 fw-bold d-flex align-items-center">
+                     
+                        KASA TAKİP SİSTEMİ
+                    </a>
+                </div>
+                <div class="top-menu ms-auto">
+                    <ul class="nav">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="username">@userNameToShow</span>
+                         
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index"><i class="fas fa-user-edit me-2"></i> Bilgilerim</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="post" class="mb-0" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                                        <button type="submit" class="dropdown-item"><i class="fas fa-sign-out-alt me-2"></i> Çıkış</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </header>
+        }
+
+        <main role="main" class="@(isUserAuthenticated && !hideMenusForPage ? "content-area-fluid" : "py-4")">
+            @RenderBody()
+        </main>
+
+        @if (isUserAuthenticated && !hideMenusForPage)
+        {
+            <footer class="page-footer-main">
+                <div class="container-fluid">
+                     @DateTime.Now.Year - Kasa Takip Sistemi - Efe Ali KANLI
+                </div>
+            </footer>
+        }
+      
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
